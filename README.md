@@ -50,23 +50,18 @@
 
 #### Male and female separately
 * asd_by_country
-
-* asd_by_group
-
+* asd_by_group  
 including for region, super-region, WHO region, WB group, world
-
 * crude_by_country
-
-* crude_by_group
-
+* crude_by_group  
 including for region, super-region, WHO region, WB group, world
 
 #### Male and female combined
 * asd_by_country_bothsex
-* asd_by_group_bothsex
+* asd_by_group_bothsex  
 including for region, super-region, WHO region, WB group, world
 * crude_by_country_bothsex
-* crude_by_group_bothsex
+* crude_by_group_bothsex  
 including for region, super-region, WHO region, WB group, world
 
 ### Plotting
