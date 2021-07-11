@@ -15,10 +15,17 @@
 * clean_data
 * print_cleaned
 * clean_single_psu_ssa
+* generate_fasting_status
 
-##### anthro only
+##### RF specific cleaning
 * get_bmi_prev
 * get_height_prev
+* define_prev  
+take a set of booleans as input and generate dummy including missing data
+* clean_multi_chol  
+accounting for multivariate constraints for cholesterol
+* generate_dm_medication
+* calculate_average_bp
 
 #### Summarising: by RF
 * generate_age_group
@@ -66,4 +73,5 @@ including for region, super-region, WHO region, WB group, world
 
 ### Plotting
 * make_maps
-* 
+* colour scales
+
