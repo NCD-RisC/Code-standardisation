@@ -48,8 +48,8 @@
 
 ### Postprocessing
 
-Aggregating age-specific results into age-standardised or crude results  
-by country or by groups of countries,  
+Aggregating age-specific results into age-standardised or crude results
+by country or by groups of countries,
 including for region, super-region, WHO region, WB group, world
 
 #### Male and female separately
