@@ -12,29 +12,29 @@
 #### Subsetting
 
 #### Cleaning: by RF
-clean_data
+* clean_data
 
 #### Summarising: by RF
-generate_age_group
-make_svydesign
-summarise_data
-summarise_data_parallel
+* generate_age_group
+* make_svydesign
+* summarise_data
+* summarise_data_parallel
 
-### Metadata: by RF
-find_number
+#### Metadata: by RF
+* find_number
 
-## Summary level
+### Summary level
 
-### Extraction: by RF
-check_sheets
-check_age_groups
+#### Extraction: by RF
+* check_sheets
+* check_age_groups
 
-### Metadata: by RF
+#### Metadata: by RF
 
-## Combined data
+### Combined data
 
-### Merging summary: by RF
+#### Merging summary: by RF
 
-### Merging metadata: by RF
+#### Merging metadata: by RF
 
 
