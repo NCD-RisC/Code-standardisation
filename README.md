@@ -54,6 +54,7 @@ accounting for multivariate constraints for cholesterol
 ## Functions that are shared across RFs for postprocessing and plotting
 
 ### Postprocessing
+* read_country_list  
 
 Aggregating age-specific results into age-standardised or crude results
 by country or by groups of countries,
@@ -73,5 +74,5 @@ including for region, super-region, WHO region, WB group, world
 
 ### Plotting
 * make_maps
-* colour scales
-
+* colour_scales
+* regional_colour_palette
