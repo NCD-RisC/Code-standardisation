@@ -16,10 +16,10 @@ Template script for extracting new individual-level studies
 Check internal consistency of merged data
 
 ### Data cleaning (`general_cleaning.R`)
-* clean_numerical
+* clean_numerical  
 clean a numerical variable
+* clean_categorical  
 clean a categorical variable
-* clean_categorical
 * clean_data  
 clean a variable to remove certain locations and print out percentage cleaned by `id_study` (called in `clean_numerical` and `clean_categorical`)
 * print_cleaned  
