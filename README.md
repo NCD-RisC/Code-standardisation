@@ -10,7 +10,10 @@ Standardising shared functions and scripts in NCD-RisC codes. These include thos
 ## 1. Individual level data processing
 
 ### Extraction, merging and subsetting risk factor data
-* Extraction_template.R
+* Extraction_template.R  
+Template script for extracting new individual-level studies
+* data_consistency_check  
+Check internal consistency of merged data
 
 ### Data cleaning (`general_cleaning.R`)
 * clean_numerical
