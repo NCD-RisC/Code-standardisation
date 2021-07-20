@@ -28,7 +28,7 @@ clean_categorical <- function(variable, plausible_values, where = NULL, known_na
 # and print out a summary with % cleaned by id_study
 clean_data <- function(variable, plausible_range, variable_type, where, known_na_codes, print = TRUE) {
     if (is.null(where)) {
-        where <- 1:nrow(data)
+        where <- 1:length(variable)
     }
     
     cleaned_column <- data[where, variable]
@@ -101,7 +101,7 @@ convert_data <- function(column, where, conversion_factor) {
 
 ## clean_svydesign ## 
 # this function stratifies the data based in: id_study, or id_study//age_mean//sex, or id_study//age_mean//sex//is_urban;
-# tt then checks whether within a given study there is a mix of subjects with & without (NA) values 
+# then checks whether within a given study there is a mix of subjects with & without (NA) values 
 # for any survey design variable: psu, stratum, sample weight (each variable is explored separately). 
 # These studies where there is a mixed of subjects with & without (i.e. NA) values for
 # the survey design variables are problematic because the svydesign() function can't deal 
