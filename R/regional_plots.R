@@ -1,3 +1,4 @@
+## Regional plot by year
 regional_plot_year <- function(df, group_var, age_low = NULL, age_high = NULL,
                                my_xlim = NULL, my_ylim = NULL, 
                                file_name) {
@@ -63,8 +64,9 @@ regional_plot_year <- function(df, group_var, age_low = NULL, age_high = NULL,
     dev.off()
 }
 
-regional_plot_age <- function(df, group_var, year_low, year_high, my_xlim = c(5, 19), 
-                              my_ylim, file_name) {
+## Regional plot by age
+regional_plot_age <- function(df, group_var, year_low = NULL, year_high = NULL, my_xlim = c(5, 19), 
+                              my_ylim = NULL, file_name) {
     
     # Make sure that all required standardised variables are included
     std_vars <- c('group_var', 'mean_var', 'year_var', 'se_var')
