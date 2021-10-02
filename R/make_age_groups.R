@@ -58,5 +58,5 @@ make_age_groups <- function(age, age_design_min, age_design_max, anthro = FALSE)
     age_mean[adolescent_list] <- floor(age[adolescent_list])
   }
   
-  return(data.frame(age_mean, age_group, age_min, age_max))   # ideally age_min and age_max should go
+  return(data.frame(age_mean, age_group, agemin = age_min, agemax = age_max))   # ideally age_min and age_max should go
 }
