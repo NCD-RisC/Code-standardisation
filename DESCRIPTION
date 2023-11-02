@@ -7,3 +7,4 @@ Description: Standard shared functions for NCD-RisC project, including those for
 Depends: R (>= 4.0.0)
 License: TBC
 LazyData: true
+RoxygenNote: 7.2.3
