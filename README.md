@@ -10,60 +10,89 @@ Standardising shared functions and scripts in NCD-RisC codes. These include thos
 ## 1. Individual level data processing
 
 ### Extraction, merging and subsetting risk factor data
-* Extraction Template.R  
+* `Extraction Template.R`  
 Template script for extracting new individual-level studies
-* Check extraction.R  
+* `Check extraction.R`  
 Check internal consistency of extraction data - run after every individual-level data extraction
 
-### Data cleaning (`general_cleaning.R`)
-* clean_numerical  
-clean a numerical variable
-* clean_categorical  
-clean a categorical variable
-* clean_data  
-clean a variable to remove certain locations and print out percentage cleaned by `id_study` (called in `clean_numerical` and `clean_categorical`)
-* print_cleaned  
-print out percentage cleaned by `id_study` (called in `clean_data`; deprecated)
-* clean_svydesign  
-clean survey design variables
-* clean_single_psu_ssa  
-cleaning for single PSU errors
-* mahalanobis_cleaning  
-cleaning a pair of variables using Mahalanobis distance
+### Data cleaning  
+#### General cleaning functions `cleaning_functions.R`
+* `clean_data`  
+Level 1 master function: cleaning a specific variable in the data frame
+Convert units of measurement data to standard units and clean the data (calls `convert_unit` and `clean_data_index` functions); returns the cleaned variable as a vector
+* `convert_unit`  
+Convert units of measurement data to standard units and remove studies with 'EXCLUDE' as units; print out number cleaned by `id_study`
+* `clean_data_index`  
+Level 2 master function: get the positions to be cleaned for the specified variable
+Calls specific functions according to the variable being cleaned for; returns a list of locations to be cleaned (calls the specific cleaning functions below)
+* Specific cleaning functions by variable  
+`clean_height`, 
+`clean_weight`, 
+`clean_bmi`, 
+`clean_waist`, 
+`clean_wth`, 
+`clean_hip`, 
+`clean_whr`, 
+`clean_sex`, 
+`clean_age`, 
+`clean_continuous`, 
+`clean_categorical`,
+`clean_preg`  
 
-#### functions specific to certain risk factors
-* clean_multi_chol  
-accounting for multivariate constraints for cholesterol
-* make_fasting_status  
-generate fasting status based on `fasting_time` and `is_fasting`
+#### Functions for cleaning survye design variables `cleaning_survey_design.R`
+* `clean_svydesign`  
+Clean survey design variables: beta version - need to work on testing and commenting
+* `svy_check`  
+Check survey design variables: legacy function called in `clean_svydesign`
+* `clean_single_psu_ssa`  
+Cleaning to avoid single PSU errors
 
-### Summarising data
-* make_age_group  
-create age groups according `age`, `age_min_xxxx_F|M`, `age_max_xxxx_F|M`
-* make_svydesign  
-generate survey design dummies by `id_study`, according to availability of `psu`, `stratum`, `samplewt_xxxx`
-* get_prev  
-take a set of booleans as input and generate dummy including missing data
-* get_summary  
+#### Multivariate cleaning functions `mahalanobis_detection.R`
+* `maha_clean`  
+Cleaning a pair of variables using Mahalanobis distance
+Example available in `examples\example_maha.R`  
+
+#### Functions specific to certain risk factors
+* `clean_multi_chol` - to do  
+Accounting for multivariate constraints for cholesterol
+* `make_fasting_status` - to do  
+Generate fasting status based on `fasting_time` and `is_fasting`
+
+### Summarising data  
+* `make_age_groups`  
+Create age groups according `age`, `age_min_xxxx_F|M`, `age_max_xxxx_F|M`
+* `make_svydesign` - to do  
+Generate survey design dummies by `id_study`, according to availability of `psu`, `stratum`, `samplewt_xxxx`
+
+#### For anthropometrics `summarising_functions_anthro.R`  
+* `get_bmi_prev`  
+Generate dummy (0/1) including missing data for BMI categories for calculating prevalence  
+Need to specify the location of `child_adolescent_bmi_cutoffs.csv` to BMI categories for 5-19 year-olds  
+* `get_height_prev`  
+Generate dummy (0/1) including missing data for height categories for calculating prevalence  
+* `bmi_adol`  
+Utility function for `get_bmi_prev`: deciding the direction of the comparison (`>` or `<`)  
+
+#### For blood pressure
+`summarising_functions_BP.R` - to do  
+
+#### For glucose/diabetes
+`summarising_functions_glu.R` - to do  
+
+#### For cholesterol
+`summarising_functions_chol.R` - to do  
+
+#### Functions for generating summaries
+* `get_summary` - to do  
 summarise data by `id_study`, `sex`, `age`, and potentially `is_urban`
-* get_summary_parallel  
+* `get_summary_parallel` - to do  
 `get_summary` using parallel computing
 
-#### functions specific to certain risk factors
-* get_bmi_prev  
-generate dummies for BMI in standard categories
-* get_bmi_prev_adol  
-generate dummies for BMI in standard categories using adolescent cut-offs
-* get_height_prev  
-generate dummies for height in standard categories
-* get_average_bp  
-generate average BP from individual measurements
-
 ### Metadata
-* get_number  
+* get_number - to do  
 return the number of non-NA values in a variable
 
-## 2. Summary level data processing
+## 2. Summary level data processing - to do
 
 #### Extraction
 * check_sheets  
@@ -74,7 +103,7 @@ check if `age_group` information is consistent across tabs
 #### Metadata
 Nothing
 
-## 3. Check data
+## 3. Check data - to do
 * make_data_source_map  
 make data source map (using `make_map`)
 * bubble_plot  
@@ -86,7 +115,7 @@ aka 'fit plot without fit'
 * compare_data  
 compare different versions of data (typically used in model runs)
 
-## 4. Modelling
+## 4. Modelling - to do 
 
 #### Cluster shell scripts
 * model_run  
@@ -97,7 +126,7 @@ shell script with auto restart after walltime (to develop)
 #### Processing raw outputs
 * combine_chains.R
 
-## 5. Postprocessing
+## 5. Postprocessing - to do
 
 Aggregating age-specific results into age-standardised or crude results
 by country or by groups of countries,
@@ -122,12 +151,12 @@ including for region, super-region, WHO region, WB group, world
 Read the list of countries with region information and setting factor levels so that regions/super-regions appear in certain orders
 
 ## 6. Making figures
-* regional_colour_palette  
-returns named vector with NCD-RisC standard regional and super-regional colours
-* symetrical_colour_scales  
-a colour scale for change which makes zero white-ish and have symetric shades of colours in both directions
-* make_map  
-mapping function with standard NCD-RisC layout (including boxes for small countries)
-* make_map_with_density  
-a variation of map with density (by country) displayed
+* `0.1 Region Superregion palette.R`
+Returns named vector with NCD-RisC standard regional and super-regional colours
 
+#### Mapping functions `new map function.R`
+* `map_function`  
+Plot a map with values stored in `colour_val` using either user-defined or built-in colour schemes, with NCD-RisC layout (including dots for small countries) and density  
+Example available in `example\example_make_maps.R`
+* `get_change_scale`  
+Returns a colour scale for change which makes zero white-ish and have symetric shades of colours in both directions
