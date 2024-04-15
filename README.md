@@ -157,7 +157,8 @@ including for region, super-region, WHO region, WB group, world
 
 #### Standard palette and regional order  
 * [region_sregion_palette.R](./R/figures/region_sregion_palette.R)
-Returns named vector with NCD-RisC standard regional and super-regional colours, and setting factor levels so that regions/super-regions appear in certain orders  
+Returns named vector with NCD-RisC standard regional and super-regional colours (`region_col` and `sregion_col`)  
+Sets factor levels so that regions and super-regions appear in certain orders (`region_order` and `sergion_order`)  
 
 #### World maps [new map function.R](./R/figures/new%20map%20function.R)
 * `map_function`  
