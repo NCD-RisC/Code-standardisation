@@ -4,8 +4,8 @@ library(ggridges)
 library(grid)
 
 countrylist <- read.csv('../data/country-list-2023-new.csv')
-source('../R/region_sregion_palette.R')
-source('../R/map_function.R')
+source('../R/figures/region_sregion_palette.R')
+source('../R/figures/map_function.R')
 blank <- grid.rect(gp = gpar(col = NA, fill = NA))
 
 world_map <- readRDS('../data/world_map.RDS')

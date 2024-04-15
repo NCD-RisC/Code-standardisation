@@ -2,7 +2,7 @@
 # Example of use of data cleaning functions
 # January 2024
 
-source('../R/cleaning_functions_data.R')
+source('../R/data-handling/cleaning_functions_data.R')
 
 library(dplyr)
 

@@ -2,7 +2,7 @@
 # Example of making age groups
 # January 2024
 
-source('../R/make_age_groups.R')
+source('../R/data-handling/make_age_groups.R')
 
 library(dplyr)
 

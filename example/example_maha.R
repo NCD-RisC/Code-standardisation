@@ -2,7 +2,7 @@
 # Example of use of maha_clean function
 # July 2021
 
-source("../R/cleaning_functions_mahalanobis.R")
+source("../R/data-handling/cleaning_functions_mahalanobis.R")
 library(MASS)  #  for simulating the data
 
 
