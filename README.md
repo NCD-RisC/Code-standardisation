@@ -10,13 +10,13 @@ Standardising shared functions and scripts in NCD-RisC codes. These include thos
 ## 1. Individual level data processing
 
 ### Extraction, merging and subsetting risk factor data
-* [extractions_template.R](./R/extractions_template.R)  
+* [extractions_template.R](./R/data-extraction/extractions_template.R)  
 Template script for extracting new individual-level studies
-* [extractions_check.R](./R/extractions_check.R)  
+* [extractions_check.R](./R/data-extraction/extractions_check.R)  
 Check internal consistency of extraction data - run after every individual-level data extraction
 
 ### Data cleaning  
-#### General cleaning functions [cleaning_functions_data.R](./R/cleaning_functions_data.R)
+#### General cleaning functions [cleaning_functions_data.R](./R/data-handling/cleaning_functions_data.R)
 * `clean_data`  
 Level 1 master function: cleaning a specific variable in the data frame
 Convert units of measurement data to standard units and clean the data (calls `convert_unit` and `clean_data_index` functions); returns the cleaned variable as a vector
@@ -40,7 +40,7 @@ Calls specific functions according to the variable being cleaned for; returns a 
 `clean_preg`  
 * Examples available in [example/example_data_cleaning.R](./example/example_data_cleaning.R)
 
-#### Functions for cleaning survye design variables [cleaning_functions_survey_design.R](./R/cleaning_functions_survey_design.R)
+#### Functions for cleaning survye design variables [cleaning_functions_survey_design.R](./R/data-handling/cleaning_functions_survey_design.R)
 * `clean_svydesign`  
 Clean survey design variables: beta version - need to work on testing and commenting
 * `svy_check`  
@@ -48,7 +48,7 @@ Check survey design variables: legacy function called in `clean_svydesign`
 * `clean_single_psu_ssa`  
 Cleaning to avoid single PSU errors
 
-#### Multivariate cleaning functions [cleaning_functions_mahalanobis.R](./R/cleaning_functions_mahalanobis.R)
+#### Multivariate cleaning functions [cleaning_functions_mahalanobis.R](./R/data-handling/cleaning_functions_mahalanobis.R)
 * `maha_clean`  
 Cleaning a pair of variables using Mahalanobis distance
 Example available in [example/example_maha.R](./example/example_maha.R)  
@@ -66,7 +66,7 @@ Example available in [example/example_make_age_group.R](./example/example_make_a
 * `make_svydesign` - to do  
 Generate survey design dummies by `id_study`, according to availability of `psu`, `stratum`, `samplewt_xxxx`
 
-#### For anthropometrics [summarising_functions_anthro.R](./R/summarising_functions_anthro.R)  
+#### For anthropometrics [summarising_functions_anthro.R](./R/data-handling/summarising_functions_anthro.R)  
 * `get_bmi_prev`  
 Generate dummy (0/1) including missing data for BMI categories for calculating prevalence  
 Need to specify the location of `child_adolescent_bmi_cutoffs.csv` to BMI categories for 5-19 year-olds  
@@ -156,11 +156,11 @@ including for region, super-region, WHO region, WB group, world
 ## 6. Making figures  
 
 #### Standard palette and regional order  
-* [region_sregion_palette.R](./R/region_sregion_palette.R)
+* [region_sregion_palette.R](./R/figures/region_sregion_palette.R)
 Returns named vector with NCD-RisC standard regional and super-regional colours (`region_col` and `sregion_col`)  
 Sets factor levels so that regions and super-regions appear in certain orders (`region_order` and `sergion_order`)  
 
-#### World maps [new map function.R](./R/map_function.R)
+#### World maps [new map function.R](./R/figures/map_function.R)
 * `map_function`  
 Plot a map with values stored in `colour_val` using either user-defined or built-in colour schemes, with NCD-RisC layout (including dots for small countries) and density  
 Example available in [example/example_make_maps.R](./example/example_make_maps.R)
