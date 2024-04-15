@@ -153,7 +153,9 @@ including for region, super-region, WHO region, WB group, world
 * crude_by_country_bothsex
 * crude_by_group_bothsex  
 
-## 6. Making figures
+## 6. Making figures  
+
+#### Standard palette and regional order  
 * [region_sregion_palette.R](./R/figures/region_sregion_palette.R)
 Returns named vector with NCD-RisC standard regional and super-regional colours, and setting factor levels so that regions/super-regions appear in certain orders  
 
