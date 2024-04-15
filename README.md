@@ -73,23 +73,23 @@ Generate dummy (0/1) including missing data for height categories for calculatin
 * `bmi_adol`  
 Utility function for `get_bmi_prev`: deciding the direction of the comparison (`>` or `<`)  
 
-#### For blood pressure
-`summarising_functions_BP.R` - to do  
+#### For blood pressure - to do  
+`summarising_functions_BP.R`  
 
-#### For glucose/diabetes
-`summarising_functions_glu.R` - to do  
+#### For glucose/diabetes - to do  
+`summarising_functions_glu.R`  
 
-#### For cholesterol
-`summarising_functions_chol.R` - to do  
+#### For cholesterol - to do  
+`summarising_functions_chol.R`  
 
-#### Functions for generating summaries
-* `get_summary` - to do  
+#### Functions for generating summaries - to do 
+* `get_summary` 
 summarise data by `id_study`, `sex`, `age`, and potentially `is_urban`
-* `get_summary_parallel` - to do  
+* `get_summary_parallel`  
 `get_summary` using parallel computing
 
-### Metadata
-* get_number - to do  
+### Metadata - to do
+* get_number  
 return the number of non-NA values in a variable
 
 ## 2. Summary level data processing - to do
@@ -105,13 +105,15 @@ Nothing
 
 ## 3. Check data - to do
 * make_data_source_map  
-make data source map (using `make_map`)
+make data source map (using `map_function`)
 * bubble_plot  
 to rewrite the original script to avoid manual resizing the bubbles
 * data_plot_by_region  
 aka 'regional plot'
 * data_plot_by_country  
-aka 'fit plot without fit'
+aka 'fit plot without fit'  
+* data_plot_by_country_interactive  
+interactive 'fit plot without fit'  
 * compare_data  
 compare different versions of data (typically used in model runs)
 
@@ -146,17 +148,19 @@ including for region, super-region, WHO region, WB group, world
 * crude_by_country_bothsex
 * crude_by_group_bothsex  
 
-### Utilities
-* read_country_list  
-Read the list of countries with region information and setting factor levels so that regions/super-regions appear in certain orders
-
 ## 6. Making figures
 * `0.1 Region Superregion palette.R`
-Returns named vector with NCD-RisC standard regional and super-regional colours
+Returns named vector with NCD-RisC standard regional and super-regional colours, and setting factor levels so that regions/super-regions appear in certain orders  
 
-#### Mapping functions `new map function.R`
+#### World maps `new map function.R`
 * `map_function`  
 Plot a map with values stored in `colour_val` using either user-defined or built-in colour schemes, with NCD-RisC layout (including dots for small countries) and density  
 Example available in `example\example_make_maps.R`
 * `get_change_scale`  
-Returns a colour scale for change which makes zero white-ish and have symetric shades of colours in both directions
+Returns a colour scale for change which makes zero white-ish and have symetric shades of colours in both directions  
+
+#### Circular bars - to do
+
+#### Hexagon maps - to do
+
+#### Long bars with country names on two sides - to do
