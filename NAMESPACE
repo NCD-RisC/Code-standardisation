@@ -2,3 +2,4 @@
 
 export(clean_data)
 export(clean_data_index)
+export(map_function)

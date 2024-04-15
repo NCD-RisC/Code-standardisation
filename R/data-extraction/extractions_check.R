@@ -5,14 +5,14 @@
 
 library(insight)
 
-std_names_list <- read.csv("S:/Projects/HeightProject/Original dataset/Data/Surveys/__Extraction Template/standard_variable_names.csv")
+std_names_list <- read.csv("../data/standard_variable_names.csv")
 # we use ha1c in extraction but hba1c downstream - rename hba1c variables to ha1c for these checks
 std_names_list$Name[std_names_list$Name == "device_hba1c"] <- "device_ha1c"
 std_names_list$Name[std_names_list$Name == "unit_hba1c"] <- "unit_ha1c"
 std_names_list$Name[std_names_list$Name == "hba1c"] <- "ha1c"
 numeric_var_list <- as.character(std_names_list$Name[which(std_names_list$Type == "numeric")])
 
-country <- read.csv("S:/Projects/HeightProject/Original dataset/Covariates/country-list-2023-new.csv")
+country <- read.csv("../data/country-list-2023-new.csv")
 
 check_extraction <- function(dataset) {
   print <- function(x, col = "white", indent = 0) print_color(paste0(strrep(" ", indent), paste(x, collapse = ", "), "\n"), color = col)
@@ -157,9 +157,9 @@ check_extraction <- function(dataset) {
       }
 
     }
-    
+
     ## Check if urban_rural is 0 or 1 and urban_rural isn't "both"
-    
+
     if(unique(dat$iso) == "TKL" & !(unique(dat$urban_rural) == "both")){
        print("CHECK - iso is TKL which has perurb=0, so we should have urban_rural = both", "br_red")
     } else if ((unique(dat$iso) == "NRU" | unique(dat$iso) == "BMU" | unique(dat$iso) == "BMU" | (unique(dat$iso) == "SGP" & unique(dat$mid_year) > 2001)) & !(unique(dat$urban_rural) == "both")){
