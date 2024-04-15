@@ -12,11 +12,11 @@ Standardising shared functions and scripts in NCD-RisC codes. These include thos
 ### Extraction, merging and subsetting risk factor data
 * [`Extraction Template.R`](./R/data-extraction/Extraction%20Template.R)  
 Template script for extracting new individual-level studies
-* `Check extraction.R`  
+* [`Check extraction.R`](./R/data-extraction/Check%20extractions.R)  
 Check internal consistency of extraction data - run after every individual-level data extraction
 
 ### Data cleaning  
-#### General cleaning functions `cleaning_functions.R`
+#### General cleaning functions [`cleaning_functions_data.R`](./R/data-handling/cleaning_functions_data.R)
 * `clean_data`  
 Level 1 master function: cleaning a specific variable in the data frame
 Convert units of measurement data to standard units and clean the data (calls `convert_unit` and `clean_data_index` functions); returns the cleaned variable as a vector
@@ -38,8 +38,9 @@ Calls specific functions according to the variable being cleaned for; returns a 
 `clean_continuous`, 
 `clean_categorical`,
 `clean_preg`  
+* Examples available in [example/example_data_cleaning.R](./example/example_data_cleaning.R)
 
-#### Functions for cleaning survye design variables `cleaning_survey_design.R`
+#### Functions for cleaning survye design variables [`cleaning_functions_survey_design.R`](./R/data-handling/cleaning_functions_survey_design.R)
 * `clean_svydesign`  
 Clean survey design variables: beta version - need to work on testing and commenting
 * `svy_check`  
@@ -47,24 +48,25 @@ Check survey design variables: legacy function called in `clean_svydesign`
 * `clean_single_psu_ssa`  
 Cleaning to avoid single PSU errors
 
-#### Multivariate cleaning functions `mahalanobis_detection.R`
+#### Multivariate cleaning functions [`mahalanobis_detection.R`](./R/data-handling/mahalanobis_detection.R)
 * `maha_clean`  
 Cleaning a pair of variables using Mahalanobis distance
-Example available in `examples\example_maha.R`  
+Example available in [`example/example_maha.R`](./example/example_maha.R)  
 
-#### Functions specific to certain risk factors
-* `clean_multi_chol` - to do  
+#### Functions specific to certain risk factors - to do
+* `clean_multi_chol`  
 Accounting for multivariate constraints for cholesterol
-* `make_fasting_status` - to do  
+* `make_fasting_status`  
 Generate fasting status based on `fasting_time` and `is_fasting`
 
 ### Summarising data  
 * `make_age_groups`  
-Create age groups according `age`, `age_min_xxxx_F|M`, `age_max_xxxx_F|M`
+Create age groups according `age`, `age_min_xxxx_F|M`, `age_max_xxxx_F|M`  
+Example available in [example/example_make_age_group.R](./example/example_make_age_group.R)
 * `make_svydesign` - to do  
 Generate survey design dummies by `id_study`, according to availability of `psu`, `stratum`, `samplewt_xxxx`
 
-#### For anthropometrics `summarising_functions_anthro.R`  
+#### For anthropometrics [`summarising_functions_anthro.R`](./R/data-handling/summarising_functions_anthro.R)  
 * `get_bmi_prev`  
 Generate dummy (0/1) including missing data for BMI categories for calculating prevalence  
 Need to specify the location of `child_adolescent_bmi_cutoffs.csv` to BMI categories for 5-19 year-olds  
@@ -119,11 +121,14 @@ compare different versions of data (typically used in model runs)
 
 ## 4. Modelling - to do 
 
-#### Cluster shell scripts
+#### Generating initial values
+
+#### Running on cluster with NCD-RisC container
+* NCD-RisC HPC docker image ([DockerHub](https://hub.docker.com/r/ncdrisc/ncdrisc_hpc_docker))
 * model_run  
 template shell script
 * model_run_with_restart  
-shell script with auto restart after walltime (to develop)
+shell script with auto restart after walltime
 
 #### Processing raw outputs
 * combine_chains.R
@@ -149,13 +154,13 @@ including for region, super-region, WHO region, WB group, world
 * crude_by_group_bothsex  
 
 ## 6. Making figures
-* `0.1 Region Superregion palette.R`
+* [`region_sregion_palette.R`](./R/figures/region_sregion_palette.R)
 Returns named vector with NCD-RisC standard regional and super-regional colours, and setting factor levels so that regions/super-regions appear in certain orders  
 
-#### World maps `new map function.R`
+#### World maps [`new map function.R`](./R/figures/new%20map%20function.R)
 * `map_function`  
 Plot a map with values stored in `colour_val` using either user-defined or built-in colour schemes, with NCD-RisC layout (including dots for small countries) and density  
-Example available in `example\example_make_maps.R`
+Example available in [`example/example_make_maps.R`](./example/example_make_maps.R)
 * `get_change_scale`  
 Returns a colour scale for change which makes zero white-ish and have symetric shades of colours in both directions  
 
