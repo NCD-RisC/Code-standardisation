@@ -2,11 +2,11 @@
 # Example of use of data cleaning functions
 # January 2024
 
-source('R/data-handling/cleaning_functions.R')
+source('../R/cleaning_functions_data.R')
 
 library(dplyr)
 
-data <- read.csv('data/USA NHANES 2017-2018.csv')
+data <- read.csv('../data/USA NHANES 2017-2018.csv')
 
 # test unit and plasma conversion for FPG
 data$fgl <- data$fgl / 0.0556

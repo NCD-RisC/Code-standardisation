@@ -2,7 +2,7 @@
 # Example of use of maha_clean function
 # July 2021
 
-source("Mahalanobis_detection.R")
+source("../R/cleaning_functions_mahalanobis.R")
 library(MASS)  #  for simulating the data
 
 
@@ -16,7 +16,7 @@ mu1 <- 1; s1 <- 1
 mu2 <- 2; s2 <- 1.5
 
 # Parameters for bivariate normal distribution
-mu    <- c(mu1,mu2) # Mean 
+mu    <- c(mu1,mu2) # Mean
 sigma <- matrix(c(s1^2, s1*s2*rho, s1*s2*rho, s2^2),2) # Covariance
 bvn1  <- mvrnorm(N, mu = mu, Sigma = sigma ) # from MASS package
 # plot(bvn1[,1],bvn1[,2])

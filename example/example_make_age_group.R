@@ -2,11 +2,11 @@
 # Example of making age groups
 # January 2024
 
-source('R/data-handling/make_age_groups.R')
+source('../R/make_age_groups.R')
 
 library(dplyr)
 
-data <- read.csv('data/USA NHANES 2017-2018.csv')
+data <- read.csv('../data/USA NHANES 2017-2018.csv')
 
 # get risk factor specific min and max age
 data$age_min  <- with(data, ifelse(sex == "male", age_min_anthro_M, age_min_anthro_F))
