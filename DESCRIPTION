@@ -8,3 +8,4 @@ Depends: R (>= 4.0.0)
 License: TBC
 LazyData: true
 RoxygenNote: 7.2.3
+Encoding: UTF-8
