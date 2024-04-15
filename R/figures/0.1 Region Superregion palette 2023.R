@@ -20,7 +20,7 @@ colours[11] <- add.alpha(colours[11], 0.6)    #[11] "High-income English-speakin
 colours[14] <- add.alpha(colours[14], 0.8)    #[14] "North Western Europe"   
 colours[5]  <- add.alpha(colours[5],  0.8)    # [5] "Central Europe" 
 colours[17] <- add.alpha("#FF8C00",   0.8)    #[17] "Southeast Asia" 
-colours[13] <- add.alpha(colours[13], 0.8)    #[13] "North Africa and Middle East" 
+colours[13] <- add.alpha(colours[13], 0.8)    #[13] "North Africa and Middle East"  
 colours[3]  <- add.alpha(colours[3],  0.6)    # [3] "Central and Southern Africa"
 colours[21] <- add.alpha(colours[21], 0.4)    #[21] "West Africa"  
 colours[18] <- add.alpha(colours[18], 0.8)    #[18] "Southern Africa"   
@@ -31,7 +31,7 @@ original_col <- col2rgb(colours, alpha=TRUE)
 alpha        <- matrix(rep(original_col[4,]/255,3),nrow=3, byrow=TRUE)
 opac_col     <- original_col[-4,]*alpha + (1-alpha)*255
 region_col   <- rgb(opac_col[1,],opac_col[2,],opac_col[3,], maxColorValue=255)[-16]
-names(region_col) <- c("Andean Latin America","The Caribbean","Central and southern Africa","Central Asia","Central Europe","Central Latin America","East Africa","East Asia and the Pacific","Eastern Europe","South Asia", "High-income English-speaking countries","Melanesia","Middle East and north Africa","Northwestern Europe","Polynesia and Micronesia","Southeast Asia","West Africa","Southern Latin America","Southwestern Europe","Other sub-Saharan Africa")
+names(region_col) <- c("Andean Latin America","The Caribbean","Central and southern Africa","Central Asia","Central Europe","Central Latin America","East Africa","East Asia and the Pacific","Eastern Europe","South Asia", "High-income English-speaking countries","Melanesia","Middle East and north Africa","Northwestern Europe","Polynesia and Micronesia","Southeast Asia","Other sub-Saharan Africa","Southern Latin America","Southwestern Europe","West Africa")
 
 
 ## Super-regional palette ##
@@ -56,9 +56,9 @@ region_order <- c("High-income English-speaking countries",
                       "Polynesia and Micronesia",
                       "Melanesia",
                       "East Africa",
-                      "West Africa",
+                      "Other sub-Saharan Africa",
                       "Central and southern Africa",
-                      "Other sub-Saharan Africa")                                        
+                      "West Africa")                                        
 
 sregion_order <- c("High-income western",
                    "Central and eastern Europe",
@@ -68,26 +68,3 @@ sregion_order <- c("High-income western",
                    "Central Asia, Middle East and north Africa",
                    "Oceania",
                    "Sub-Saharan Africa")
-
-
-##### OLD
-
-sregion_order_old <- c("High-income western",
-                       "Central and Eastern Europe",
-                       "Latin America and Caribbean",
-                       "Southeast Asia, East Asia and the Pacific",
-                       "South Asia",
-                       "Central Asia, Middle East and North Africa",
-                       "Oceania",
-                       "Sub-Saharan Africa")
-
-palette(brewer.pal(12,"Paired"))
-sregion_col_old <- c(palette()[c(2,6,8,12,1,4,10,5)])
-names(sregion_col_old) <- c("Central and Eastern Europe",
-                            "Central Asia, Middle East and North Africa",
-                            "Southeast Asia, East Asia and the Pacific",
-                            "South Asia",
-                            "High-income western",
-                            "Latin America and Caribbean",
-                            "Oceania",
-                            "Sub-Saharan Africa")
