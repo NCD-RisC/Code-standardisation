@@ -10,21 +10,24 @@ blank <- grid.rect(gp = gpar(col = NA, fill = NA))
 
 world_map <- readRDS('../data/world_map.RDS')
 
+
+### Example of a continuous map ###
 data <- readRDS('../data/example_map_data.RDS')
 
 # assign variable of interest to 'colour_val'
 data$colour_val <- data$htn140
-scale_range <- range(data$colour_val)
 title <- c('female' = 'Women', 'male' = 'Men')
+
+print(range(data$colour_val))
+scale_breaks <- c(min(data$colour_val),0.2,0.35,0.4,0.45,0.5,0.55,0.6,max(data$colour_val))   # does not need to be uniform
 
 ps <- list()
 for (sx in c('female','male')) ps[[sx]] <- map_function(data %>% filter(sex == sx & year == 2019),
                                                         world_map,
-                                                        scale_range,
-                                                        colour_scale = NULL,
-                                                        type = 'level1',
+                                                        scale_breaks,
+                                                        type = 'level',
                                                         plot_title = title[sx],
-                                                        plot_type = 'standalone')
+                                                        plot_type = 'standard')
 
 # "type" uses built-in colour schemes including:
 # level1 (large value is bad), level2 (large value is good), change1 (increase is bad), change2 (increase is good), pp1 (large value for increase), pp2 (large value for decrease)
@@ -37,7 +40,23 @@ for (sx in c('female','male')) ps[[sx]] <- map_function(data %>% filter(sex == s
 # further tuning of the small-country circle sizes, legend sizes, density plot location and sizes and font sizes may be necessary depending on how large the plotting area is
 
 
-pdf('example maps.pdf', height = 6, width = 7)
+pdf('example continuous maps.pdf', height = 6, width = 7)
 ggpubr::ggarrange(plotlist = ps, ncol = 1)
 dev.off()
 
+### Example of a categorical map ###
+meta <- read.csv('../data/example_metadata.csv')
+data <- data.frame(table(meta$iso))
+names(data) <- c('iso','colour_val')
+
+# add zeros
+data <- data %>% bind_rows(tibble(iso = setdiff(unique(countrylist$iso), data$iso), colour_val = 0))
+
+maxqt <- max(data$colour_val)
+
+# categories should start from zero and have length = 9 to use the default colour scheme
+p <- map_function_categorical(data, world_map, type = 'source_number', scale_breaks = c(0, 1, 2, 5, 10, 20, 30, 40, maxqt+1)) %>% suppressMessages()
+
+pdf('example data source map.pdf', height = 3.2, width = 8)
+p
+dev.off()

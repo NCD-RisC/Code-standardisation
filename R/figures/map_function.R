@@ -5,13 +5,14 @@ library(scales)
 # 'Mapping function
 #'
 #' plot a map with density and small countries as dots inside the map
-#' @param data_map The data frame with the value to colour the map in variable 'colour_val'
+#' @param data_map The data frame with the value to colour the map in variable `colour_val`
 #' @param world_map The shape file for map
-#' @param scale_range The min and max of values for the colouring variable, decided in function if NULL
+#' @param scale_breaks The break points for deciding the colour scheme, starting from min and ending with max of values
+#'  for the colouring variable, decided in function if NULL
 #' @param colour_scale Colour scheme used for plotting, decided in function if NULL
 #' @param type The type of variable being plotted, which decides the colour scale (unless provided) and formatting of legend, title and inset density chart
 #' @param plot_title Add plot title if provided
-#' @param plot_type default 'standalone'; if 'composite' then font sizes are made larger
+#' @param plot_type default 'standard'; if 'large_font' then font sizes are made larger, which may be useful when map is part of a composite figure
 #' @return A ggplot grob object: can be used in egg/ggpubr ggarrange
 #' @examples
 #' p <- map_function(data %>% filter(sex == 'Women' & year = 2022),
@@ -20,27 +21,26 @@ library(scales)
 #'                   plot_title = 'Women 2022')
 #' @export
 
-map_function <- function(data_map, world_map, scale_range = NULL, colour_scale = NULL, type = 'level1', plot_title = NULL, plot_type = 'standalone') {
+map_function <- function(data_map, world_map, scale_breaks = NULL, colour_scale = NULL, type = 'level1', plot_title = NULL, plot_type = 'standard') {
 
-    # remove two islands in the Indian Ocean that clash with density plot
-    world_map <- world_map %>% filter(!iso %in% c('ATF','HMD'))
-
-    if (is.null(scale_range)) {
+    if (is.null(scale_breaks)) {
         minqt <- min(data_map$colour_val)
         maxqt <- max(data_map$colour_val)
+        std_breaks <- seq(0, 1, by=0.1)
+        scale_breaks <- c(minqt, std_breaks[std_breaks > minqt & std_breaks < maxqt], maxqt)   # may not work well - always supply own sequence
     } else {
-        minqt <- scale_range[1]
-        maxqt <- scale_range[2]
+        minqt <- scale_breaks[1]
+        maxqt <- scale_breaks[length(scale_breaks)]
     }
 
-    ## embedded colour scales; or provide bespoke scales
+    # embedded colour scales; or provide bespoke scales
     if (is.null(colour_scale)) {
         colour_scale <- switch(
             type,
 
-            level1 = c("#240A00", "#4A1400", "#8B1A1A", "#CD3700", "#E69667", "#FFF5CF", "#fffae8"),
+            level1 = c("#240A00", "#4A1400", "#8B1A1A", "#CD3700", "#E69667", "#FFF5CF", "#FFFAE8"),
 
-            level2 = c("#040029", "#30286A", "#43459C", "#3C58BF", "#2E6CD4", "#3183E4", "#439DEE", "#7ABBEB", "#B9D9E4", "#FEF7DB", "#fffae8"),
+            level2 = c("#040029", "#30286A", "#43459C", "#3C58BF", "#2E6CD4", "#3183E4", "#439DEE", "#7ABBEB", "#B9D9E4", "#FEF7DB", "#FFFAE8"),
 
             change1 = c("#002E12", "#277D4D", "#64BC45", "#9CEA4D", "#C3FF8D", "#DBFEDF",
                         "#FFFDF5",
@@ -61,39 +61,88 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
     }
     colour_ramps <- colorRampPalette(colour_scale)
 
-    if (grepl('change', type)) {
-        label_func <- function(x) x * 100
-        scales <- get_change_scale(type, colour_ramps, minqt, maxqt, label_func)
-        my_fill <- scales[[1]]
-        my_colour <- scales[[2]]
-    } else {
-        if (grepl('pp', type)) {
-            vls <- c(0, 0.05, 0.1, 0.2, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 1)  # needs to be of odd length
-            colour_scale_ramp <- colour_ramps(length(vls))
-            minqt <- 0
-            maxqt <- 1
-            label_func <- waiver()
-        } else {
-            colour_scale_ramp <- rev(colour_ramps(24))
-            vls <- NULL
-            label_func <- percent
-        }
+    # returns a named list with fill and colour, using the same colour scheme
+    my_colour_schemes <- get_colour_scheme(type, colour_ramps, scale_breaks)
 
-        my_fill <- scale_fill_gradientn(
-            limits = c(minqt, maxqt),
-            labels = label_func,
-            colours = colour_scale_ramp,
-            values = vls,
-            na.value = "grey"
-        )
-        my_colour <- scale_colour_gradientn(
-            limits = c(minqt, maxqt),
-            labels = label_func,
-            colours = colour_scale_ramp,
-            values = vls,
-            na.value = "grey"
-        )
+    # make map using the colour scheme with predefined layout
+    p <- make_map(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title, plot_type, incl_density = TRUE)
+
+    return(p)
+}
+
+
+# 'Mapping function for categorical colours
+#'
+#' plot a map with categorical colour schemes and without density insert
+#' typically used for map of number of data sources
+#' @param data_map The data frame with the value to colour the map in variable `colour_val`
+#' @param world_map The shape file for map
+#' @param type The type of variable being plotted, which decides the colour scale (unless provided) and formatting of legend and title
+#' @param scale_breaks The cutoffs to get categories if `colour_val` is a continuous variable, decided in function if NULL
+#' @param colour_scale Colour scheme used for plotting, matching the categories if both provided, decided in function if NULL
+#' @return A ggplot grob object: can be used in egg/ggpubr ggarrange
+#' @examples
+#' p <- map_function(data,
+#'                   world_map,
+#'                   c(min(data$colour_val), max(data$colour_val)))
+#' @export
+
+map_function_categorical <- function(data_map, world_map, type = 'source_number', scale_breaks = NULL, colour_scale = NULL) {
+
+    if (is.null(scale_breaks)) {
+        minqt <- min(data_map$colour_val)
+        maxqt <- max(data_map$colour_val)
+    } else {
+        minqt <- scale_breaks[1]
+        maxqt <- scale_breaks[length(scale_breaks)]
     }
+
+    ## embedded colour scales
+    if (is.null(colour_scale)) {
+        colour_scale <- c("#FFFFFF", "#FFFFD9", "#EDF8B1", "#C7E9B4", "#7FCDBB", "#8C6BB1", "#810F7C", "#4D004B")
+    }
+    colour_ramps <- colorRampPalette(colour_scale)
+
+    if (is.null(scale_breaks)) {
+        # ideally categories should be of the length of colour_scale + 1
+        scale_breaks <- c(0, 1, 2, 5, 10, 20, 30, 40, maxqt+1)
+    }
+    cat_width <- diff(scale_breaks)
+    cat_label <- scale_breaks[-1]
+    cat_label[length(cat_label)] <- maxqt
+
+    # categorise colour_val
+    data_map$colour_val <- cut(data_map$colour_val, breaks = scale_breaks, right = FALSE, labels = cat_label)
+
+    colour_values <- colour_ramps(length(cat_label))
+    names(colour_values) <- cat_label
+
+    fill <- scale_fill_manual(
+        values = colour_values,
+        na.translate = FALSE
+    )
+    colour <- scale_colour_manual(
+        values = colour_values,
+        na.translate = FALSE
+    )
+
+    my_colour_schemes <- list(fill = fill, colour = colour, label_func = waiver())
+
+    # make map using the colour scheme with predefined layout (without density)
+    p <- make_map(data_map, world_map, my_colour_schemes, scale_breaks, paste('category', type), plot_type = 'standard', incl_density = FALSE)
+
+    return(p)
+}
+
+
+make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title = NULL, plot_type = 'standard', incl_density = TRUE) {
+
+    minqt <- scale_breaks[1]
+    maxqt <- scale_breaks[length(scale_breaks)]
+
+    # remove two islands in the Indian Ocean that clash with density plot
+    # remove the southmost island to save space in the bottom
+    world_map <- world_map %>% filter(!iso %in% c('ATF','HMD') & !group %in% ('SGS.2'))
 
     # get data for countries as dots
     dots <- c("BMU", "COM", "CPV", "MDV", "MUS", "STP", "SYC", "BHS")
@@ -102,7 +151,7 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
     dots <- c(dots, pac1, pac2)
     dot_map <- world_map %>%
         filter((iso %in% setdiff(dots,'KIR') & grepl('\\.1$', group)) |   # keep the first island when multiple exist
-               (group == 'KIR.5')) %>%   # KIR.5 is the main island for Kiribati, which appear on the other side of the map
+                   (group == 'KIR.5')) %>%   # KIR.5 is the main island for Kiribati, which appear on the other side of the map
         group_by(iso) %>%
         summarise(long = mean(long),
                   lat = mean(lat))
@@ -122,8 +171,8 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
     centre_long <- -65
     centre_lat <- 15
     radius <- 18
-    angle_start <- 15
-    angle_end <- 115
+    angle_start <- 10
+    angle_end <- 110
     angles <- seq(angle_start, angle_end, length.out = length(caribbeans)) - 85
     longs <- centre_long + radius * cos(angles/180*pi)
     lats <- centre_lat - radius * sin(angles/180*pi)
@@ -143,54 +192,60 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
     oth_map <- data.frame(iso = oth, long = longs, lat = lats)
     oth_line <- oth_map %>% rename(long_end = long, lat_end = lat) %>% left_join(oth_line_start)
 
-
     # plot map with dots
     dataset <- merge(world_map, data_map, all = TRUE) %>% arrange(order)
-    p <- ggplot(dataset, aes(x = long, y = lat, text = iso)) +
+    p <- ggplot(dataset, aes(x = long, y = lat)) +
         geom_polygon(aes(group = group, fill = colour_val)) +
         geom_path(aes(group = group), linewidth = 0.01, colour = "black") +
         geom_segment(data = bind_rows(cari_line, oth_line) %>% left_join(data_map),
                      aes(xend = long_end, yend = lat_end, group = iso), linewidth = 0.1) +
-        geom_point(data = bind_rows(dot_map, cari_map, oth_map) %>% left_join(data_map),
-                   aes(fill = colour_val), shape = 21, size = 1.8, colour = 'black', stroke = 0.001) +
         coord_equal(clip = 'off') +
         theme_void() +
-        ylim(c(-56.5,84)) +
-        my_fill +
+        ylim(c(-56,84)) +
+        my_colour_schemes[['fill']] +
         theme(
-              legend.justification = c("left", "bottom"),
-              legend.frame = element_rect(colour = 'black', linewidth = 0.2),
-              legend.ticks = element_line(colour = 'black', linewidth = 0.2),
-              legend.margin = margin(t = 0),
-              legend.spacing.x = unit(0, 'cm'),
-              legend.position = 'inside'
-              )
+            legend.justification = c("left", "bottom"),
+            legend.frame = element_rect(colour = 'black', linewidth = 0.2),
+            legend.ticks = element_line(colour = 'black', linewidth = 0.2),
+            legend.margin = margin(t = 0),
+            legend.spacing.x = unit(0, 'cm'),
+            legend.position = 'inside'
+        )
 
     if (!is.null(plot_title)) p <- p + ggtitle(plot_title)
 
-    density <- ggplot(data_map, aes(x = colour_val, y = 2, fill = after_stat(x))) +
-        geom_density_ridges_gradient(colour="black", linewidth=0.1) +
-        my_fill + theme_minimal() +
-        scale_x_continuous(expand = c(0, 0), labels = label_func, limits = c(minqt, maxqt)) +
-        scale_y_continuous(expand = expansion(mult = c(0, 0), add = c(0, 0.01))) +
-        theme(legend.position = "none",
-              plot.margin = margin(),
-              panel.grid = element_blank(),
-              axis.line.x = element_line(colour = 'black', linewidth = 0.1),
-              axis.ticks.x = element_line(linewidth = 0.2),
-              axis.text.y = element_blank(), axis.title = element_blank())
+    if (incl_density) {
+        density <- ggplot(data_map, aes(x = colour_val, y = 2, fill = after_stat(x))) +
+            geom_density_ridges_gradient(colour="black", linewidth=0.1) +
+            my_colour_schemes[['fill']] + theme_minimal() +
+            scale_x_continuous(expand = c(0, 0), labels = my_colour_schemes[['label_func']], limits = c(minqt, maxqt)) +
+            scale_y_continuous(expand = expansion(mult = c(0, 0), add = c(0, 0.01))) +
+            theme(legend.position = "none",
+                  plot.margin = margin(),
+                  panel.grid = element_blank(),
+                  axis.line.x = element_line(colour = 'black', linewidth = 0.1),
+                  axis.ticks.x = element_line(linewidth = 0.2),
+                  axis.text.y = element_blank(), axis.title = element_blank())
+    }
 
-    if (plot_type == 'composite') {
+    legend_title <- ''
+    if (grepl('change', type)) legend_title <- 'Percentage\npoint change'
+    if (grepl('source_number', type)) legend_title <- 'Number of\ndata sources'
+
+    if (plot_type == 'large_font') {
         # larger font sizes when maps are used as part of a composite figure
         p <- p +
-            guides(fill = guide_colourbar(barheight = 4.5, barwidth = 0.9, title = 'Percentage\npoint change')) +
+            geom_point(data = bind_rows(dot_map, cari_map, oth_map) %>% left_join(data_map),
+                       aes(fill = colour_val), shape = 21, size = 2, colour = 'black', stroke = 0.001) +
+            guides(fill = guide_colourbar(barheight = 4.5, barwidth = 0.9, title = legend_title)) +
             theme(
                 plot.title = element_text(size = 12),
                 legend.ticks.length = unit(0.06, 'cm'),
                 legend.text = element_text(size = 10)
             )
 
-        if (grepl('change',type)) {
+        # add legend title only for change and source number maps
+        if (grepl('change|source_number',type)) {
             p <- p + theme(legend.title = element_text(size = 10),
                            legend.position.inside = c(0.15, 0.05))
         } else {
@@ -198,24 +253,41 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
                            legend.position.inside = c(0.18, 0.07))
         }
 
-        density <- density + theme(
-            axis.ticks.length.x = unit(0.06, 'cm'),
-            axis.text.x = element_text(size = 10, colour = 'black')
-        )
+        if (incl_density) {
+            density <- density + theme(
+                axis.ticks.length.x = unit(0.06, 'cm'),
+                axis.text.x = element_text(size = 10, colour = 'black')
+            )
+        }
 
         # location and size of the density plot
-        loc <- c(50,120,-65,-15)
+        loc <- c(47,127,-67,-17)
 
     } else {
         p <- p +
-            guides(fill = guide_colourbar(barheight = 3, barwidth = 0.6, title = 'Percentage\npoint change')) +
+            geom_point(data = bind_rows(dot_map, cari_map, oth_map) %>% left_join(data_map),
+                       aes(fill = colour_val), shape = 21, size = 1.8, colour = 'black', stroke = 0.001) +
             theme(
                 plot.title = element_text(size = 8),
                 legend.ticks.length = unit(0.05, 'cm'),
                 legend.text = element_text(size = 5)
             )
 
-        if (grepl('change',type)) {
+        if (grepl('category', type)) {
+            p <- p + guides(fill = guide_legend(title = legend_title, reverse = TRUE,
+                                                override.aes = list(
+                                                    shape = NA
+                                                ))) +
+                theme(legend.key.spacing.y = unit(-0.1, 'cm'),
+                      legend.key.height = unit(0.4, 'cm'),
+                      legend.key.width = unit(0.6, 'cm'),
+                      legend.text = element_text(vjust = 1.2))
+        } else {
+            p <- p + guides(fill = guide_colourbar(barheight = 3, barwidth = 0.6, title = legend_title))
+        }
+
+        # add legend title only for change and source number maps
+        if (grepl('change|source_number',type)) {
             p <- p + theme(legend.title = element_text(size = 5),
                            legend.position.inside = c(0.17, 0.1))
         } else {
@@ -223,10 +295,12 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
                            legend.position.inside = c(0.2, 0.1))
         }
 
-        density <- density + theme(
-            axis.ticks.length.x = unit(0.05, 'cm'),
-            axis.text.x = element_text(size = 5, colour = 'black')
-        )
+        if (incl_density) {
+            density <- density + theme(
+                axis.ticks.length.x = unit(0.05, 'cm'),
+                axis.text.x = element_text(size = 5, colour = 'black')
+            )
+        }
 
         # location and size of the density plot
         loc <- c(55,115,-62,-12)
@@ -234,19 +308,92 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
 
 
     # add density plot in Indian Ocean
-    if (grepl('pp', type)) {
-        loc[1] <- loc[1] - 10
-        loc[2] <- loc[2] - 10
+    if (incl_density) {
+        if (grepl('pp', type)) {
+            loc[1] <- loc[1] - 10
+            loc[2] <- loc[2] - 10
+        }
+        p <- p + annotation_custom(ggplotGrob(density), xmin = loc[1],xmax = loc[2],ymin = loc[3],ymax = loc[4])
     }
-    p <- p + annotation_custom(ggplotGrob(density), xmin = loc[1],xmax = loc[2],ymin = loc[3],ymax = loc[4])
 
     return(p)
 }
 
 
-get_change_scale <- function(var, colour_ramps, minqt, maxqt, label_func) {
+# 'Colour scheme utility function
+#'
+#' get a colour scheme object with supplied colour scale and value ranges
+#' @param type type of the variable being plotted, a few options are provided in this example: update and add as needed
+#' @param colour_ramps a colour ramp function with the set colour scheme
+#' @param scale_breaks The break points for the colour scheme, starting from min and ending with max of values for the colouring variable
+#' @return A named list with fill and colour, using the same colour scheme
+#' @export
+
+get_colour_scheme <- function(type, colour_ramps, scale_breaks) {
+
+    minqt <- scale_breaks[1]
+    maxqt <- scale_breaks[length(scale_breaks)]
+    vls <- scales::rescale(scale_breaks)
+
+    # colour scale for change
+    if (grepl('change', type)) {
+        label_func <- function(x) x * 100
+        scales <- get_change_scale(type, colour_ramps, minqt, maxqt, label_func)
+    } else {
+        # colour scale for level
+        if (grepl('pp', type)) {
+            vls <- c(0, 0.05, 0.1, 0.2, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 1)  # needs to be of odd length
+            colour_scale_ramp <- colour_ramps(length(vls))
+            minqt <- 0
+            maxqt <- 1
+            label_func <- waiver()
+        } else if (grepl('level1', type)) {
+            colour_scale_ramp <- rev(colour_ramps(length(vls)))
+            label_func <- percent
+        }  else if (grepl('level2', type)) {
+            colour_scale_ramp <- rev(colour_ramps(length(vls)))
+            label_func <- percent
+        } else {
+            colour_scale_ramp <- rev(colour_ramps(24))
+            vls <- NULL
+            label_func <- percent
+        }
+
+        fill <- scale_fill_gradientn(
+            limits = c(minqt, maxqt),
+            labels = label_func,
+            colours = colour_scale_ramp,
+            values = vls,
+            na.value = "grey"
+        )
+        colour <- scale_colour_gradientn(
+            limits = c(minqt, maxqt),
+            labels = label_func,
+            colours = colour_scale_ramp,
+            values = vls,
+            na.value = "grey"
+        )
+        scales <- list(fill = fill, colour = colour, label_func = label_func)
+    }
+
+    return(scales)
+}
+
+
+# 'Colour scheme (for change) utility function
+#'
+#' get a colour scheme object with supplied colour scale and value ranges for a value that means change
+#' @param type type of the variable being plotted, the two options are the same in this example; they can be made different and more be added as needed
+#' @param colour_ramps a colour ramp function with the set colour scheme
+#' @param minqt minimum of the value being plotted
+#' @param maxqt maximum of the value being plotted
+#' @param label_func function to format the labels in the legend, use `waiver()` if want to pass nothing
+#' @return A named list with `fill` and `colour`, using the same colour scheme
+#' @export
+
+get_change_scale <- function(type, colour_ramps, minqt, maxqt, label_func) {
     n <- 2001
-    if (grepl('level1', var)) {
+    if (grepl('change1', type)) {
         a = 0.45
         x1  <- 1-rev(rescale(8^seq(.1,.9,length=100*a)))
         x2  <- rescale(8^seq(.1,.9,length=100))[-1]
@@ -300,5 +447,5 @@ get_change_scale <- function(var, colour_ramps, minqt, maxqt, label_func) {
         values  = vls,
         na.value = "grey")
 
-    return(list(fill = fill, colour = colour))
+    return(list(fill = fill, colour = colour, label_func = label_func))
 }
