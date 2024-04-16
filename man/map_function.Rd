@@ -7,19 +7,20 @@
 map_function(
   data_map,
   world_map,
-  scale_range = NULL,
+  scale_breaks = NULL,
   colour_scale = NULL,
   type = "level1",
   plot_title = NULL,
-  plot_type = "standalone"
+  plot_type = "standard"
 )
 }
 \arguments{
-\item{data_map}{The data frame with the value to colour the map in variable 'colour_val'}
+\item{data_map}{The data frame with the value to colour the map in variable `colour_val`}
 
 \item{world_map}{The shape file for map}
 
-\item{scale_range}{The min and max of values for the colouring variable, decided in function if NULL}
+\item{scale_breaks}{The break points for deciding the colour scheme, starting from min and ending with max of values
+for the colouring variable, decided in function if NULL}
 
 \item{colour_scale}{Colour scheme used for plotting, decided in function if NULL}
 
@@ -27,7 +28,7 @@ map_function(
 
 \item{plot_title}{Add plot title if provided}
 
-\item{plot_type}{default 'standalone'; if 'composite' then font sizes are made larger}
+\item{plot_type}{default 'standard'; if 'large_font' then font sizes are made larger, which may be useful when map is part of a composite figure}
 }
 \value{
 A ggplot grob object: can be used in egg/ggpubr ggarrange

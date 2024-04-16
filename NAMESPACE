@@ -3,3 +3,4 @@
 export(clean_data)
 export(clean_data_index)
 export(map_function)
+export(map_function_categorical)
