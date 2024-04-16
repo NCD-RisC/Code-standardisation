@@ -135,6 +135,19 @@ map_function_categorical <- function(data_map, world_map, type = 'source_number'
 }
 
 
+# 'Utility mapping function
+#'
+#' plot a map with default layout
+#' @param data_map The data frame with the value to colour the map in variable 'colour_val'
+#' @param world_map The shape file for map
+#' @param my_colour_schemes The colour schemes for plotting the map
+#' @param scale_breaks The value ranges of the values being plotted
+#' @param type The type of variable being plotted, which decides the colour scale (unless provided) and formatting of legend, title and inset density chart
+#' @param plot_title Add plot title if provided
+#' @param plot_type default 'standalone'; if 'large_font' then font sizes are made larger
+#' @param incl_density whether include a density plot inside the map
+#' @return A ggplot grob object: can be used in egg/ggpubr ggarrange
+
 make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title = NULL, plot_type = 'standard', incl_density = TRUE) {
 
     minqt <- scale_breaks[1]
@@ -327,7 +340,6 @@ make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type,
 #' @param colour_ramps a colour ramp function with the set colour scheme
 #' @param scale_breaks The break points for the colour scheme, starting from min and ending with max of values for the colouring variable
 #' @return A named list with fill and colour, using the same colour scheme
-#' @export
 
 get_colour_scheme <- function(type, colour_ramps, scale_breaks) {
 
@@ -389,7 +401,6 @@ get_colour_scheme <- function(type, colour_ramps, scale_breaks) {
 #' @param maxqt maximum of the value being plotted
 #' @param label_func function to format the labels in the legend, use `waiver()` if want to pass nothing
 #' @return A named list with `fill` and `colour`, using the same colour scheme
-#' @export
 
 get_change_scale <- function(type, colour_ramps, minqt, maxqt, label_func) {
     n <- 2001
