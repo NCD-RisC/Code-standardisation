@@ -35,7 +35,7 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
 
     ## embedded colour scales; or provide bespoke scales
     if (is.null(colour_scale)) {
-        colour_ramps <- switch(
+        colour_scale <- switch(
             type,
 
             level1 = c("#240A00", "#4A1400", "#8B1A1A", "#CD3700", "#E69667", "#FFF5CF", "#fffae8"),
@@ -58,8 +58,8 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
                         "#FCF8F3",
                         "#FAF2D7", "#FAEEB7", "#F7DE70", "#D6B732", "#796409"))
         )
-        colour_ramps <- colorRampPalette(colour_ramps)
     }
+    colour_ramps <- colorRampPalette(colour_scale)
 
     if (grepl('change', type)) {
         label_func <- function(x) x * 100
@@ -69,12 +69,12 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
     } else {
         if (grepl('pp', type)) {
             vls <- c(0, 0.05, 0.1, 0.2, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 1)  # needs to be of odd length
-            colour_scale <- colour_ramps(length(vls))
+            colour_scale_ramp <- colour_ramps(length(vls))
             minqt <- 0
             maxqt <- 1
             label_func <- waiver()
         } else {
-            colour_scale <- rev(colour_ramps(24))
+            colour_scale_ramp <- rev(colour_ramps(24))
             vls <- NULL
             label_func <- percent
         }
@@ -82,14 +82,14 @@ map_function <- function(data_map, world_map, scale_range = NULL, colour_scale =
         my_fill <- scale_fill_gradientn(
             limits = c(minqt, maxqt),
             labels = label_func,
-            colours = colour_scale,
+            colours = colour_scale_ramp,
             values = vls,
             na.value = "grey"
         )
         my_colour <- scale_colour_gradientn(
             limits = c(minqt, maxqt),
             labels = label_func,
-            colours = colour_scale,
+            colours = colour_scale_ramp,
             values = vls,
             na.value = "grey"
         )
