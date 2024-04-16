@@ -10,7 +10,7 @@ maha_clean <- function(var1, var2, level = NA, SD = 6, plot_data = TRUE){
   if (is.na(level)) level <- (1-pnorm(SD))*2
 
   data <- as.data.frame(cbind(var1, var2))
-  b    <- covMcd(data, alpha=0.95)    # robust estimate of the covariance
+  b    <- covMcd(data, alpha=0.95,nsamp = 'deterministic')    # robust estimate of the covariance
 
   data$m_dist <- mahalanobis(data, b$center,b$cov)
 
