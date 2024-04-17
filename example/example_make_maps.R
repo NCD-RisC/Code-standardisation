@@ -25,7 +25,7 @@ ps <- list()
 for (sx in c('female','male')) ps[[sx]] <- map_function(data %>% filter(sex == sx & year == 2019),
                                                         world_map,
                                                         scale_breaks,
-                                                        type = 'level',
+                                                        type = 'level1',
                                                         plot_title = title[sx],
                                                         plot_type = 'standard')
 
@@ -43,6 +43,8 @@ for (sx in c('female','male')) ps[[sx]] <- map_function(data %>% filter(sex == s
 pdf('example continuous maps.pdf', height = 6, width = 7)
 ggpubr::ggarrange(plotlist = ps, ncol = 1)
 dev.off()
+
+
 
 ### Example of a categorical map ###
 meta <- read.csv('../data/example_metadata.csv')
