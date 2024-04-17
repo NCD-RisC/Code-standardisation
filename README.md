@@ -160,10 +160,10 @@ including for region, super-region, WHO region, WB group, world
 Returns named vector with NCD-RisC standard regional and super-regional colours (`region_col` and `sregion_col`)  
 Sets factor levels so that regions and super-regions appear in certain orders (`region_order` and `sergion_order`)  
 
-#### World maps [new map function.R](./R/figures/map_function.R)
+#### World maps [map function.R](./R/figures/map_function.R)
 * `map_function`  
 Plot a map with values stored in `colour_val` using either user-defined or built-in colour schemes, with NCD-RisC layout (including dots for small countries) and density  
-Example available in [example/example_make_maps.R](./example/example_make_maps.R)
+Example available in [example/example_make_maps.R](./example/example_make_maps.R), including one for a map of number of data sources with categorical colour scheme
 * `get_change_scale`  
 Returns a colour scale for change which makes zero white-ish and have symetric shades of colours in both directions  
 
