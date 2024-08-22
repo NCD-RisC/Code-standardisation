@@ -194,14 +194,17 @@ make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type,
     cari_line <- cari_map %>% rename(long_end = long, lat_end = lat) %>% left_join(cari_line_start)
 
     # other line countries
-    oth <- c("MNE", "BRN", "BHR")
+    #oth <- c("MNE", "BRN", "BHR")
+    #longs <- c(19, 112, 57)
+    #lats <- c(35, 8, 15)
+    oth <- c( "BRN", "BHR")
+    longs <- c(112, 57)
+    lats <- c(8, 15)
     oth_line_start <- world_map %>%
         filter(iso %in% oth & grepl('\\.1$', group)) %>%
         group_by(iso) %>%
         summarise(long = mean(long),
                   lat = mean(lat))
-    longs <- c(19, 112, 57)
-    lats <- c(35, 8, 15)
     oth_map <- data.frame(iso = oth, long = longs, lat = lats)
     oth_line <- oth_map %>% rename(long_end = long, lat_end = lat) %>% left_join(oth_line_start)
 
