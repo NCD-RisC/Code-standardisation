@@ -88,6 +88,7 @@ bubble_plot <- function(meta, sizing_f = 1.2, legend_sizes = c(1,10,20), year_ra
         scale_fill_manual(values = cols) +
         theme(axis.title.x = element_blank(),
               text = element_text(size = 12),
+              axis.text = element_text(colour = 'black'),
               legend.position = 'nones',
               legend.title = element_blank(),
               panel.grid = element_line(colour = grey(0.9), linewidth = 0.5)) +
