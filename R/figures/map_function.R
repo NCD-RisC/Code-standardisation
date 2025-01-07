@@ -13,6 +13,7 @@ library(scales)
 #' @param type The type of variable being plotted, which decides the colour scale (unless provided) and formatting of legend, title and inset density chart
 #' @param plot_title Add plot title if provided
 #' @param plot_type default 'standard'; if 'large_font' then font sizes are made larger, which may be useful when map is part of a composite figure
+#' @param incl_legend If a legend is included; default TRUE
 #' @return A ggplot grob object: can be used in egg/ggpubr ggarrange
 #' @examples
 #' p <- map_function(data %>% filter(sex == 'Women' & year = 2022),
@@ -21,7 +22,10 @@ library(scales)
 #'                   plot_title = 'Women 2022')
 #' @export
 
-map_function <- function(data_map, world_map, scale_breaks = NULL, colour_scale = NULL, type = 'level1', plot_title = NULL, plot_type = 'standard') {
+map_function <- function(data_map, world_map, scale_breaks = NULL, colour_scale = NULL,
+                         type = c('level1','level2','change1','change2','pp1','pp2'),
+                         plot_title = NULL,
+                         plot_type = c('standard','large_font'), incl_legend = TRUE) {
 
     if (is.null(scale_breaks)) {
         minqt <- min(data_map$colour_val)
@@ -65,7 +69,7 @@ map_function <- function(data_map, world_map, scale_breaks = NULL, colour_scale 
     my_colour_schemes <- get_colour_scheme(type, colour_ramps, scale_breaks)
 
     # make map using the colour scheme with predefined layout
-    p <- make_map(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title, plot_type, incl_density = TRUE)
+    p <- make_map(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title, plot_type, incl_density = TRUE, incl_legend)
 
     return(p)
 }
@@ -146,9 +150,10 @@ map_function_categorical <- function(data_map, world_map, type = 'source_number'
 #' @param plot_title Add plot title if provided
 #' @param plot_type default 'standalone'; if 'large_font' then font sizes are made larger
 #' @param incl_density whether include a density plot inside the map
+#' @param incl_legend If a legend is included; default TRUE
 #' @return A ggplot grob object: can be used in egg/ggpubr ggarrange
 
-make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title = NULL, plot_type = 'standard', incl_density = TRUE) {
+make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type, plot_title = NULL, plot_type = 'standard', incl_density = TRUE, incl_legend = TRUE) {
 
     minqt <- scale_breaks[1]
     maxqt <- scale_breaks[length(scale_breaks)]
@@ -218,8 +223,10 @@ make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type,
         coord_equal(clip = 'off') +
         theme_void() +
         ylim(c(-56,84)) +
-        my_colour_schemes[['fill']] +
-        theme(
+        my_colour_schemes[['fill']]
+    
+    if (incl_legend) {
+        p <- p + theme(
             legend.justification = c("left", "bottom"),
             legend.frame = element_rect(colour = 'black', linewidth = 0.2),
             legend.ticks = element_line(colour = 'black', linewidth = 0.2),
@@ -227,6 +234,11 @@ make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type,
             legend.spacing.x = unit(0, 'cm'),
             legend.position = 'inside'
         )
+    } else {
+        p <- p + theme(
+            legend.position = 'none'
+        )
+    }
 
     if (!is.null(plot_title)) p <- p + ggtitle(plot_title)
 
@@ -255,18 +267,23 @@ make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type,
                        aes(fill = colour_val), shape = 21, size = 2, colour = 'black', stroke = 0.001) +
             guides(fill = guide_colourbar(barheight = 4.5, barwidth = 0.9, title = legend_title)) +
             theme(
-                plot.title = element_text(size = 12),
+                plot.title = element_text(size = 12)
+            )
+        
+        if (incl_legend) {
+            p <- p + theme(
                 legend.ticks.length = unit(0.06, 'cm'),
                 legend.text = element_text(size = 10)
             )
 
-        # add legend title only for change and source number maps
-        if (grepl('change|source_number',type)) {
-            p <- p + theme(legend.title = element_text(size = 10),
-                           legend.position.inside = c(0.15, 0.05))
-        } else {
-            p <- p + theme(legend.title = element_blank(),
-                           legend.position.inside = c(0.18, 0.07))
+            # add legend title only for change and source number maps
+            if (grepl('change|source_number',type)) {
+                p <- p + theme(legend.title = element_text(size = 10),
+                               legend.position.inside = c(0.15, 0.05))
+            } else {
+                p <- p + theme(legend.title = element_blank(),
+                               legend.position.inside = c(0.18, 0.07))
+            }
         }
 
         if (incl_density) {
@@ -285,32 +302,37 @@ make_map <- function(data_map, world_map, my_colour_schemes, scale_breaks, type,
                        aes(fill = colour_val), shape = 21, size = 1.8, colour = 'black', stroke = 0.001) +
             theme(
                 plot.title = element_text(size = 8),
+            )
+
+        if (incl_legend) {
+            p <- p + theme(
                 legend.ticks.length = unit(0.05, 'cm'),
                 legend.text = element_text(size = 5)
             )
-
-        if (grepl('category', type)) {
-            p <- p + guides(fill = guide_legend(title = legend_title, reverse = TRUE,
-                                                override.aes = list(
-                                                    shape = NA
-                                                ))) +
-                theme(legend.key.spacing.y = unit(-0.1, 'cm'),
-                      legend.key.height = unit(0.4, 'cm'),
-                      legend.key.width = unit(0.6, 'cm'),
-                      legend.text = element_text(vjust = 1.2))
-        } else {
-            p <- p + guides(fill = guide_colourbar(barheight = 3, barwidth = 0.6, title = legend_title))
+            
+            if (grepl('category', type)) {
+                p <- p + guides(fill = guide_legend(title = legend_title, reverse = TRUE,
+                                                    override.aes = list(
+                                                        shape = NA
+                                                    ))) +
+                    theme(legend.key.spacing.y = unit(-0.1, 'cm'),
+                          legend.key.height = unit(0.4, 'cm'),
+                          legend.key.width = unit(0.6, 'cm'),
+                          legend.text = element_text(vjust = 1.2))
+            } else {
+                p <- p + guides(fill = guide_colourbar(barheight = 3, barwidth = 0.6, title = legend_title))
+            }
+    
+            # add legend title only for change and source number maps
+            if (grepl('change|source_number',type)) {
+                p <- p + theme(legend.title = element_text(size = 5),
+                               legend.position.inside = c(0.17, 0.1))
+            } else {
+                p <- p + theme(legend.title = element_blank(),
+                               legend.position.inside = c(0.2, 0.1))
+            }
         }
-
-        # add legend title only for change and source number maps
-        if (grepl('change|source_number',type)) {
-            p <- p + theme(legend.title = element_text(size = 5),
-                           legend.position.inside = c(0.17, 0.1))
-        } else {
-            p <- p + theme(legend.title = element_blank(),
-                           legend.position.inside = c(0.2, 0.1))
-        }
-
+            
         if (incl_density) {
             density <- density + theme(
                 axis.ticks.length.x = unit(0.05, 'cm'),
