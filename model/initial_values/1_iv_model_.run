@@ -1,0 +1,9 @@
+#!/bin/sh
+#PBS -l walltime=168:00:00
+#PBS -l select=1:ncpus=2:mem=10gb
+#PBS -J 1-70
+
+cd $EPHEMERAL/model_110_total_diabetes
+module load anaconda3/personal
+source activate Renv
+R --slave --args ${PBS_ARRAY_INDEX} 35 < ${EPHEMERAL}/model_110_total_diabetes/total_DM.config

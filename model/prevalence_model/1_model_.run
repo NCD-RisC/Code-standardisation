@@ -1,0 +1,8 @@
+#!/bin/sh
+#PBS -l walltime=168:00:00
+#PBS -l select=1:ncpus=2:mem=30gb
+#PBS -J 1-20
+#PBS -q med-bio
+
+cd $EPHEMERAL/Model242
+singularity exec --bind .:/mnt $HOME/environments/ncdrisc_hpc_env-v0.3.2.sif R --slave --args ${PBS_ARRAY_INDEX} 10 < 1_prev_adult_med_based.config
