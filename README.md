@@ -123,35 +123,35 @@ compare different versions of data (typically used in model runs)
 
 initial_values
 
-* 1_NCD_RisC_diabetes_prevalence_iv_model.R
-  Global model using arbitrary initial values (sampled from selected distributions and then overdispersed)
-  Sources * 1_functions.R , and is run on the HPC using * 1_iv_model_.run, which sources * 1_iv_model_.config to configure model specifications. 
-  Run 10 chains (per sex)
-* 2_combine_MCMC_chains_master.R
+* `1_NCD_RisC_diabetes_prevalence_iv_model.R`
+  Global model using arbitrary initial values (sampled from selected distributions and then overdispersed).
+  Sources `1_functions.R`, and is run on the HPC using `1_iv_model_.run`, which sources `1_iv_model_.config` to configure model specifications. 
+  Run 10 chains (per sex).
+* `2_combine_MCMC_chains_master.R`
   Master script for combining the 10 model chains. Inspect for any egregious issues with chains.
-  Sources * 2_combine_MCMC_chains.R and * 2_MCMC_convergence_plot_functions.R
-  This is run either locally or on Open OnDemand
-* 3_means_variances_dispersion.R
+  Sources `2_combine_MCMC_chains.R` and `2_MCMC_convergence_plot_functions.R`.
+  This is run either locally or on Open OnDemand.
+* `3_means_variances_dispersion.R`
   Script to calculate the multivariate normal distribution to sample parameter initial values from
   Means given by the posterior means of parameters
   Covariance matrix given by the posterior covariance matrix of all of the parameters, which is then dispersed by a factor of 1.5.
   A labelled list of parameter indices is also generated here, to then be used when allocating initial values within the 'main run' model code.
-  Run on the HPC using * 1_means_variances_dispersion.run, which sources * 1_means_variances_dispersion.config to configure script specifications. 
-* 4_sample_iv.R
-  Simply samples initial values from the multivariate normal distribution as calculated in * 3_means_variances_dispersion.R
-  Run 10 in parallel (per sex) on the HPC using * 4_sample_iv.run, which sources * 4_sample_iv.config to configure script specifications.
+  Run on the HPC using `1_means_variances_dispersion.run`, which sources `1_means_variances_dispersion.config` to configure script specifications. 
+* `4_sample_iv.R`
+  Simply samples initial values from the multivariate normal distribution as calculated in `3_means_variances_dispersion.R`.
+  Run 10 in parallel (per sex) on the HPC using `4_sample_iv.run`, which sources `4_sample_iv.config` to configure script specifications.
   We need a distinctly sampled set of initial values for each of the 10 chains we will run for the 'main model' run.
   
 prevalence_model
 
-* 1_NCD_RisC_diabetes_prevalence_model.R
-  Global model using sampled initial values (sampled using the work flow as in initial_values)
-  Sources * 1_functions.R , and is run on the HPC using * 1_model_.run, which sources * 1_model_.config to configure model specifications. 
-  Run 10 chains (per sex)
-* 2_combine_MCMC_chains_master.R
+* `1_NCD_RisC_diabetes_prevalence_model.R`
+  Global model using sampled initial values (sampled using the workflow as in initial_values).
+  Sources `1_functions.R , and is run on the HPC using `1_model_.run`, which sources `1_model_.config` to configure model specifications. 
+  Run 10 chains (per sex).
+* `2_combine_MCMC_chains_master.R`
   Master script for combining model chains. Convergence must be inspected here. The usual procedure is to combine the first 8, and then the remaining two chains are to be used if any need replacing due to convergence issues.
-  Sources * 2_combine_MCMC_chains.R and * 2_MCMC_convergence_plot_functions.R
-  This is run either locally or on Open OnDemand
+  Sources `2_combine_MCMC_chains.R` and `2_MCMC_convergence_plot_functions.R`.
+  This is run either locally or on Open OnDemand.
 
   
 #### Running on cluster with NCD-RisC container
