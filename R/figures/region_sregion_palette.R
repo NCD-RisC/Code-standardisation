@@ -1,3 +1,5 @@
+# Ana update February 2025, for Oceania --> Pacific island nations
+
 library(RColorBrewer)
 
 add.alpha <- function(col, alpha=1){
@@ -37,7 +39,7 @@ names(region_col) <- c("Andean Latin America","The Caribbean","Central and south
 ## Super-regional palette ##
 palette(brewer.pal(12,"Paired"))
 sregion_col <- c(palette()[c(2,6,8,1,4,10,12,5)])
-names(sregion_col) <- c("Central and eastern Europe","Central Asia, Middle East and north Africa","East and southeast Asia and the Pacific","High-income western","Latin America and the Caribbean","Oceania","South Asia","Sub-Saharan Africa")
+names(sregion_col) <- c("Central and eastern Europe","Central Asia, Middle East and north Africa","East and southeast Asia and the Pacific","High-income western","Latin America and the Caribbean","Pacific island nations","South Asia","Sub-Saharan Africa")
 
 region_order <- c("High-income English-speaking countries",
                       "Northwestern Europe",
@@ -60,13 +62,13 @@ region_order <- c("High-income English-speaking countries",
                       "Central and southern Africa",
                       "Other sub-Saharan Africa")
 
-sregion_order <- c("High-income western",
+sregion_order <- c("High-income western",            ##updated
                    "Central and eastern Europe",
                    "Latin America and the Caribbean",
                    "East and southeast Asia and the Pacific",
                    "South Asia",
+                   "Pacific island nations",
                    "Central Asia, Middle East and north Africa",
-                   "Oceania",
                    "Sub-Saharan Africa")
 
 
